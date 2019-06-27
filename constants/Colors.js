@@ -12,14 +12,14 @@ export default {
   noticeBackground: tintColor,
   noticeText: '#fff',
 
-  // OUR COLORS
-  primaryColor: '#191B2F',
-  accentColor: '',
-  placeholderColor: '',
-  accentGradientStart: '',
-  accentGradientEnd: '',
-  primaryGradientStart:'',
-  primaryGradientEnd:'',
-  headingColor: '',
-
+  //Our colors
+  primaryColor:'#191B2F',
+  accentColor:'#9458EA',
+  placeholderColor:'#989CC1',
+  accentGradientStart:'#8250AF',
+  accentGradientEnd:'#3A2496',
+  primaryGradientStart:'#1E2542',
+  primaryGradientEnd:'#16162C',
+  headingColor:'#FFF',
+  greyColor:'#aaa',
 };
