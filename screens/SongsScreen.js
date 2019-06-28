@@ -1,4 +1,4 @@
-import * as WebBrowser from 'expo-web-browser';
+// import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   StyleSheet,
@@ -15,20 +15,39 @@ import SongItem from "../components/SongItem";
 import RoundedButton from "../components/RoundedButton";
 import {MaterialIcons} from "@expo/vector-icons";
 import {responsiveWidth,responsiveHeight,responsiveFontSize} from "react-native-responsive-dimensions";
-
+import {Audio} from  "expo-av";
+// import {unlockAsync} from "expo/build/ScreenOrientation/ScreenOrientation";
 export default class SongsScreen extends React.Component {
   constructor(props) {
     super(props);
+    const sound = new Audio.Sound();
+
     this.state = {
-      songs: []
+      songs: [],
+      isPaused: false,
+      sound: sound,
+      currentSong: undefined,
+      isSongLoading: false,
     };
   }
 
   async componentWillMount() {
     let songs = await getAllSongs();
-    console.log("Songs:"+JSON.stringify(songs));
+    //console.log("Songs:"+JSON.stringify(songs));
+
     this.setState({
       songs: songs
+    });
+  }
+  async componentDidMount() {
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: false,
+      staysActiveInBackground: true
     });
   }
 
@@ -51,14 +70,69 @@ export default class SongsScreen extends React.Component {
               <FlatList data={this.state.songs}
                         style={{flex:1}}
                         keyExtractor={(data) => data.id + ""}
-                        renderItem={({item}) => <SongItem song ={item}/>}/>
+                        renderItem={({item}) => <SongItem song ={item} isActive = {this.isSongActive(item)} songClicked={this.playSong.bind(this)}/>}/>
             </ScrollView>
           </LinearGradient>
-          <NowPlaying/>
+          {typeof this.state.currentSong !== 'undefined' ? <NowPlaying isPaused = {this.state.isPaused}
+                                                                       song = {this.state.currentSong}
+                                                                       onToggle={this.togglePause.bind(this)}/>
+                                                                       :null}
+
         </View>
     );
   }
+  async playSong(song){
+    console.log(typeof this.state.currentSong);
+    let songLoaded = (typeof this.state.currentSong) !== 'undefined';
+    if(!this.state.isSongLoading &&
+        (!songLoaded || this.state.currentSong.id !== song.id)){
+          console.log("Inside if condition");
+          this.setState({
+            isSongLoading: true
+          });
+          if(songLoaded){
+            await this.state.sound.unloadAsync();
+          }
+          console.log("Loading song");
+          await this.state.sound.loadAsync({uri: song.location},{},false);
+          console.log("Playing Song");
+          await this.state.sound.playAsync();
+          this.setState({
+            currentSong: song,
+            isSongLoading: false
+          });
+    }
+  }
+  isSongActive(item){
+    return(this.isSongSelected() && this.state.currentSong.id === item.id);
+  }
+  isSongSelected(){
+    return (typeof this.state.currentSong !== 'undefined');
+  }
+
+  async togglePause(){
+    console.log("TogglePause called");
+    if(this.state.currentSong){
+      console.log("Going to pause current song :" +this.state.currentSong);
+      let isPaused = !this.state.isPaused;
+      if(isPaused){
+        console.log("Pausing Song");
+        await this.state.sound.pauseAsync();
+        console.log("Paused");
+
+      }
+      else{
+        console.log("Playing Song");
+        await this.state.sound.playAsync();
+        console.log("Played");
+      }
+      this.setState({
+        isPaused: isPaused
+      });
+    }
+  }
 }
+
 
 SongsScreen.navigationOptions = {
   header: null,
