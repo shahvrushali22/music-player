@@ -11,9 +11,6 @@ import Colors from "../constants/Colors";
 export default class NowPlaying extends React.Component{
     constructor(props){
         super(props);
-        this.state={
-            progress:0.3
-        }
     }
     render(){
         return(
@@ -26,7 +23,7 @@ export default class NowPlaying extends React.Component{
                     <View  style ={styles.nowPlayingContainer}>
 
 
-                        <View style={[styles.progressBar,{width:responsiveWidth((this.state.progress *100))}]}/>
+                        <View style={[styles.progressBar,{width:responsiveWidth(this.props.currentPosition)}]}/>
 
                         <View style={GlobalStyles.styles.controlContainer}>
                             <View style={GlobalStyles.styles.songContainer}>
@@ -51,7 +48,8 @@ export default class NowPlaying extends React.Component{
 //TODO:Wrap song
 
     nowPlayingClicked(){
-        console.log("Open Now Playing Page")
+        console.log("Open Now Playing Page");
+        this.props.navigation.navigate('NowPlaying');
     }
 
     renderPlayButton(){
@@ -63,10 +61,6 @@ export default class NowPlaying extends React.Component{
         return(
             <MaterialIcons name = {"pause"} color = {Colors.headingColor} size = {responsiveFontSize(6)}/>
         );
-
-
-
-
     }
 }
 

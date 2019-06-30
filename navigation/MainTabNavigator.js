@@ -6,9 +6,11 @@ import {MaterialIcons} from "@expo/vector-icons";
 
 import TabBarIcon from '../components/TabBarIcon';
 import SongsScreen from '../screens/SongsScreen';
-import LinksScreen from '../screens/LinksScreen';
+import SearchScreen from '../screens/SearchScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Colors from "../constants/Colors";
+import  NowPlayingScreen from "../screens/NowPlayingScreen";
+
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -18,6 +20,7 @@ const config = Platform.select({
 const HomeStack = createStackNavigator(
   {
     Home: SongsScreen,
+      NowPlaying: NowPlayingScreen
   },
   config
 );
@@ -32,7 +35,7 @@ HomeStack.path = '';
 
 const LinksStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Links: SearchScreen,
   },
   config
 );
